@@ -128,15 +128,15 @@ def jogar():
         posicaoXPersona = posicaoXPersona + movimentoXPersona            
         posicaoYPersona = posicaoYPersona + movimentoYPersona            
         
-        if posicaoXPersona < 0 :
-            posicaoXPersona = 15
-        elif posicaoXPersona >920:
-            posicaoXPersona = 910
+        if posicaoXPersona < 165 :
+            posicaoXPersona = 180
+        elif posicaoXPersona >750:
+            posicaoXPersona = 740
             
-        if posicaoYPersona < 0 :
-            posicaoYPersona = 15
-        elif posicaoYPersona > 620:
-            posicaoYPersona = 610
+        if posicaoYPersona < 100 :
+            posicaoYPersona = 100
+        elif posicaoYPersona > 480:
+            posicaoYPersona = 480
         
             
         tela.fill(branco)
