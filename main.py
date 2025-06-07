@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import math
 import tkinter as tk
 from tkinter import messagebox
 from recursos.funcoes import inicializarBancoDeDados
@@ -21,6 +22,7 @@ icone  = pygame.image.load("assets/icone.png")
 pygame.display.set_icon(icone)
 branco = (255,255,255)
 preto = (0, 0 ,0 )
+
 iron = pygame.image.load("assets/iron.png")
 iron = pygame.transform.scale(iron, (80,80))
 fundoStart = pygame.image.load("assets/fundoStart.png")
@@ -46,7 +48,7 @@ def jogar():
     tela
     largura_janela = 300
     altura_janela = 200
-
+    
     # Criação da janela principal - deve vir primeiro
     root = tk.Tk()
 
@@ -143,6 +145,7 @@ def jogar():
         tela.blit(fundoJogo, (0,0) )
         #pygame.draw.circle(tela, preto, (posicaoXPersona,posicaoYPersona), 40, 0 )
         tela.blit( iron, (posicaoXPersona, posicaoYPersona) )
+        pygame.draw.circle(tela, (0, 0, 200), (900,50 ), 30)
         
         posicaoXMissel = posicaoXMissel + velocidadeMissel
         if posicaoXMissel > 1000:
