@@ -1,9 +1,12 @@
 # pip install cx_freeze
 import cx_Freeze
+from cx_Freeze import setup, Executable
+import sys
+import os
 executaveis = [ 
-               cx_Freeze.Executable(script="feito.py", icon="assets/icone.ico") ]
+               cx_Freeze.Executable(script="main.py", icon="assets/icone.ico") ]
 cx_Freeze.setup(
-    name = "Iron Man",
+    name = "Sobrevivente no Trânsito",
     options={
         "build_exe":{
             "packages":["pygame"],
