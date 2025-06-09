@@ -1,8 +1,6 @@
 # pip install cx_freeze
 import cx_Freeze
-from cx_Freeze import setup, Executable
-import sys
-import os
+
 executaveis = [ 
                cx_Freeze.Executable(script="main.py", icon="assets/icone.ico") ]
 cx_Freeze.setup(
