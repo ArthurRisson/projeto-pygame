@@ -273,8 +273,8 @@ def dead():
     alturaButtonQuit = 40
 
     # Carrega os dados do arquivo
-    if os.path.exists("base.atitus"):
-        with open("base.atitus", "r") as arquivo:
+    if os.path.exists("log.dat"):
+        with open("log.dat", "r") as arquivo:
             log_partidas = json.load(arquivo)
     else:
         log_partidas = {}
