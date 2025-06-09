@@ -87,7 +87,8 @@ def jogar():
     root.mainloop()
     
     
-
+    raio_bola = 30
+    crescendo = True
     posicaoXPersona = 400
     posicaoYPersona = 300
     movimentoXPersona  = 0
@@ -145,7 +146,15 @@ def jogar():
         tela.blit(fundoJogo, (0,0) )
         #pygame.draw.circle(tela, preto, (posicaoXPersona,posicaoYPersona), 40, 0 )
         tela.blit( iron, (posicaoXPersona, posicaoYPersona) )
-        pygame.draw.circle(tela, (0, 0, 200), (900,50 ), 30)
+        if crescendo:
+            raio_bola += 0.5
+            if raio_bola >= 40:
+                crescendo = False
+        else:
+            raio_bola -= 0.5
+            if raio_bola <= 30:
+                crescendo = True
+        pygame.draw.circle(tela, (0, 0, 200), (900,50 ), int(raio_bola))
         
         posicaoXMissel = posicaoXMissel + velocidadeMissel
         if posicaoXMissel > 1000:
