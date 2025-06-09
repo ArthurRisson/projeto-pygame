@@ -7,7 +7,13 @@ from tkinter import messagebox
 from recursos.funcoes import inicializarBancoDeDados
 from recursos.funcoes import escreverDados
 import json
+import speech_recognition as sr
+import pyttsx3
 from recursos.funcoes import tela_inicial
+from recursos.funcoes import obter_nome_por_voz
+from recursos.funcoes import falar
+voz = pyttsx3.init()
+voz.setProperty("rate", 150)
 pygame.init()  # inicializa todos os módulos do pygame, incluindo o mixer
 # ou, se quiser só inicializar o mixer:
 pygame.mixer.init()
@@ -41,50 +47,59 @@ pygame.mixer.music.load("assets/somfundo.mp3")
 
 velocidadeOvelha = random.choice([2, -2])
 def jogar():
+    global nome  # Para ser acessado em outras funções
     posicaoXOvelha = 50
     posicaoYOvelha = 20
-    
     velocidadeOvelha = random.choice([2, -2])
-    tela
-    largura_janela = 300
-    altura_janela = 200
-    
-    # Criação da janela principal - deve vir primeiro
-    root = tk.Tk()
 
-    # Obter as dimensões da tela para centralizar a janela
-    largura_tela = root.winfo_screenwidth()
-    altura_tela = root.winfo_screenheight()
-    pos_x = (largura_tela - largura_janela) // 2
-    pos_y = (altura_tela - altura_janela) // 2
-    root.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
-    root.title("Informe seu nickname")
-    instrucoes = "🚗 Desvie dos carros!\n⬆️⬇️ Mova para frente e para trás\n❌ Se bater, você perde!\n Escreva o se nickname\n"
-    label_instrucao = tk.Label(root, text=instrucoes, font=("Arial", 11))
-    label_instrucao.pack(pady=10)
-    def obter_nome():
-        global nome
-       
-        nome = entry_nome.get()  # Obtém o texto digitado
-        if not nome:  # Se o campo estiver vazio
-            messagebox.showwarning("Aviso", "Por favor, digite seu nome!")  # Exibe uma mensagem de aviso
-        else:
-            root.destroy()  # Fecha a janela após a entrada válida
+    usar_voz = messagebox.askyesno("Entrada de Nome", "Deseja usar o microfone para dizer seu nome?")
 
-    root.protocol("WM_DELETE_WINDOW", obter_nome)
+    if usar_voz:
+        instrucoes_voz = (
+            "Desvie dos carros!\n"
+            "Mova para frente e para trás\n"
+            "Se bater, você perde!\n"
+            "Diga seu nickname quando ouvir o bip."
+        )
+        
+        messagebox.showinfo("Instruções", instrucoes_voz) 
+        
+        nome = obter_nome_por_voz()
+        if not nome:
+            messagebox.showwarning("Aviso", "Não entendi. Tente novamente!")
+            return
+    else:
+        root = tk.Tk()
+        root.title("Informe seu nickname")
 
-    # Entry (campo de texto)
-    entry_nome = tk.Entry(root)
-    entry_nome.pack()
+        largura_janela = 300
+        altura_janela = 200
+        largura_tela = root.winfo_screenwidth()
+        altura_tela = root.winfo_screenheight()
+        pos_x = (largura_tela - largura_janela) // 2
+        pos_y = (altura_tela - altura_janela) // 2
+        root.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
 
-    # Botão para pegar o nome
-    botao = tk.Button(root, text="Enviar", command=obter_nome)
-    botao.pack()
+        def obter_nome():
+            nonlocal root
+            global nome
+            nome = entry_nome.get().strip()
+            if not nome:
+                messagebox.showwarning("Aviso", "Por favor, digite seu nome!")
+            else:
+                root.destroy()
 
-    # Instruções - só depois que a janela foi criada
-   
+        instrucoes = "🚗 Desvie dos carros!\n⬆️⬇️ Mova para frente e para trás\n❌ Se bater, você perde!\n\nEscreva seu nickname:"
+        label_instrucao = tk.Label(root, text=instrucoes, font=("Arial", 11))
+        label_instrucao.pack(pady=10)
 
-    root.mainloop()
+        entry_nome = tk.Entry(root)
+        entry_nome.pack()
+
+        botao = tk.Button(root, text="Enviar", command=obter_nome)
+        botao.pack()
+
+        root.mainloop()
     
     
     raio_bola = 30

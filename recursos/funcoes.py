@@ -4,6 +4,8 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 import pygame
+import speech_recognition as sr
+import pyttsx3
 tamanho = (1000,700)
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode( tamanho ) 
@@ -27,6 +29,7 @@ explosaoSound = pygame.mixer.Sound("assets/boom.aiff")
 fonteMenu = pygame.font.SysFont("celeste",28)
 fonteMorte = pygame.font.SysFont("celeste",120)
 pygame.mixer.music.load("assets/somfundo.mp3")
+voz = pyttsx3.init()
 def limpar_tela():
     os.system("cls")
     
@@ -246,3 +249,24 @@ def tela_inicial():
 
         pygame.display.update()
         relogio.tick(60)
+
+def falar(texto):
+    voz.say(texto)
+    voz.runAndWait()
+
+def obter_nome_por_voz():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        falar("Diga seu nome, bip")
+        print("🎤 Ouvindo nome...")
+        audio = r.listen(source)
+        try:
+            nome = r.recognize_google(audio, language="pt-BR")
+            falar(f"Você disse {nome}. Nome registrado.")
+            return nome
+        except sr.UnknownValueError:
+            falar("Desculpe, não entendi. Tente novamente.")
+            return obter_nome_por_voz()
+        except sr.RequestError:
+            falar("Erro ao se conectar com o serviço de voz.")
+            return "Jogador"
