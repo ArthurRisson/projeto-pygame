@@ -1,4 +1,4 @@
-import os, time
+import os, time, sys
 import json
 from datetime import datetime
 import tkinter as tk
@@ -6,29 +6,8 @@ from tkinter import messagebox
 import pygame
 import speech_recognition as sr
 import pyttsx3
-tamanho = (1000,700)
-relogio = pygame.time.Clock()
-tela = pygame.display.set_mode( tamanho ) 
-pygame.display.set_caption("Sobrevivente do Trânsito")
-icone  = pygame.image.load("assets/icone.png")
-pygame.display.set_icon(icone)
-branco = (255,255,255)
-preto = (0, 0 ,0 )
-iron = pygame.image.load("assets/iron.png")
-iron = pygame.transform.scale(iron, (80,80))
-fundoStart = pygame.image.load("assets/fundoStart.png")
-fundoJogo = pygame.image.load("assets/fundoJogo.png")
-fundoDead = pygame.image.load("assets/fundomorte.png")
-missel = pygame.image.load("assets/missile.png")
-missel = pygame.transform.scale(missel, (215, 150))
-fundo_boas_vindas = pygame.image.load("assets/bemvindo.png")
 pygame.init()
-pygame.mixer.init()
-missileSound = pygame.mixer.Sound("assets/carro.wav")
-explosaoSound = pygame.mixer.Sound("assets/explo.wav")
-fonteMenu = pygame.font.SysFont("celeste",28)
-fonteMorte = pygame.font.SysFont("celeste",120)
-pygame.mixer.music.load("assets/somfundo.mp3")
+pygame.font.init()
 voz = pyttsx3.init()
 def limpar_tela():
     os.system("cls")
@@ -99,77 +78,67 @@ def tela_boas_vindas():
 
     root.mainloop()
     
-def dead():
-        pygame.mixer.music.stop()
-        pygame.mixer.Sound.play(explosaoSound)
-larguraButtonStart = 150
-alturaButtonStart  = 40
-larguraButtonQuit = 150
-alturaButtonQuit  = 40
-    
-    # Carregar e processar o log
-try:
-    with open("log.dat", "r") as arquivo:
-        log_partidas = json.load(arquivo)
-except Exception as e:
-    log_partidas = {}
-    
+def dead(tela, fundoDead, fonteMenu, branco, preto, relogio, explosaoSound, jogar):
+    pygame.mixer.music.stop()
+    pygame.mixer.Sound.play(explosaoSound)
+
+    larguraButtonStart = 150
+    alturaButtonStart = 40
+    larguraButtonQuit = 150
+    alturaButtonQuit = 40
+
+    try:
+        with open("log.dat", "r", encoding="utf-8") as arquivo:
+            log_partidas = json.load(arquivo)
+    except Exception:
+        log_partidas = {}
+
     registros = list(log_partidas.items())[-5:]  # últimos 5 registros
-    
+
     fonteLog = pygame.font.SysFont("celeste", 24)
     fonteTitulo = pygame.font.SysFont("celeste", 36)
 
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
+                pygame.quit()
                 quit()
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if startButton.collidepoint(evento.pos):
                     larguraButtonStart = 140
-                    alturaButtonStart  = 35
+                    alturaButtonStart = 35
                 if quitButton.collidepoint(evento.pos):
                     larguraButtonQuit = 140
-                    alturaButtonQuit  = 35
+                    alturaButtonQuit = 35
             elif evento.type == pygame.MOUSEBUTTONUP:
                 if startButton.collidepoint(evento.pos):
-                    larguraButtonStart = 150
-                    alturaButtonStart  = 40
                     jogar()
                 if quitButton.collidepoint(evento.pos):
-                    larguraButtonQuit = 150
-                    alturaButtonQuit  = 40
+                    pygame.quit()
                     quit()
-        
+
         tela.fill(branco)
-        tela.blit(fundoDead, (0,0))
-        
-        # Título
+        tela.blit(fundoDead, (0, 0))
+
         titulo = fonteTitulo.render("Log das Últimas 5 Partidas", True, preto)
         tela.blit(titulo, (300, 20))
-        
-        # Mostrar cada registro do log
+
         y_inicio = 80
         espacamento = 40
-        if registros:
-            for i, (nome_jogador, dados) in enumerate(registros):
-                pontos = dados[0]
-                data = dados[1]
-                texto_log = f"{i+1}. Jogador: {nome_jogador} | Pontos: {pontos} | Data: {data}"
-                texto_render = fonteLog.render(texto_log, True, preto)
-                tela.blit(texto_render, (50, y_inicio + i * espacamento))
-        else:
-            msg = fonteLog.render("Nenhum registro de partidas encontrado.", True, preto)
-            tela.blit(msg, (50, y_inicio))
-        
-        # Botões
-        startButton = pygame.draw.rect(tela, branco, (10,10, larguraButtonStart, alturaButtonStart), border_radius=15)
+        for i, (nome_jogador, dados) in enumerate(registros):
+            pontos, data = dados
+            texto_log = f"{i+1}. Jogador: {nome_jogador} | Pontos: {pontos} | Data: {data}"
+            texto_render = fonteLog.render(texto_log, True, preto)
+            tela.blit(texto_render, (50, y_inicio + i * espacamento))
+
+        startButton = pygame.draw.rect(tela, branco, (10, 10, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Iniciar Game", True, preto)
-        tela.blit(startTexto, (25,12))
-        
-        quitButton = pygame.draw.rect(tela, branco, (10,60, larguraButtonQuit, alturaButtonQuit), border_radius=15)
+        tela.blit(startTexto, (25, 12))
+
+        quitButton = pygame.draw.rect(tela, branco, (10, 60, larguraButtonQuit, alturaButtonQuit), border_radius=15)
         quitTexto = fonteMenu.render("Sair do Game", True, preto)
-        tela.blit(quitTexto, (25,62))
-        
+        tela.blit(quitTexto, (25, 62))
+
         pygame.display.update()
         relogio.tick(60)
 
@@ -270,3 +239,15 @@ def obter_nome_por_voz():
         except sr.RequestError:
             falar("Erro ao se conectar com o serviço de voz.")
             return "Jogador"
+def carregar_asset(*caminho_relativo):
+    """
+    Retorna o caminho absoluto para um arquivo dentro da pasta 'assets',
+    compatível com execução como .py ou .exe.
+    """
+    if hasattr(sys, '_MEIPASS'):
+        caminho_base = sys._MEIPASS  # usado em executáveis gerados
+    else:
+        caminho_base = os.path.dirname(os.path.abspath(__file__))
+        caminho_base = os.path.abspath(os.path.join(caminho_base, ".."))  # sobe da pasta recursos/
+    
+    return os.path.join(caminho_base, "assets", *caminho_relativo)

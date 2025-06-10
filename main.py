@@ -12,6 +12,8 @@ import pyttsx3
 from recursos.funcoes import tela_inicial
 from recursos.funcoes import obter_nome_por_voz
 from recursos.funcoes import falar
+import sys
+from recursos.funcoes import carregar_asset
 voz = pyttsx3.init()
 voz.setProperty("rate", 150)
 pygame.init()  # inicializa todos os módulos do pygame, incluindo o mixer
@@ -24,26 +26,41 @@ tamanho = (1000,700)
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode( tamanho ) 
 pygame.display.set_caption("Sobrevivente do Trânsito")
-icone  = pygame.image.load("assets/icone.png")
+icone = pygame.image.load(carregar_asset("icone_min.png"))
 pygame.display.set_icon(icone)
 branco = (255,255,255)
 preto = (0, 0 ,0 )
+iron = pygame.image.load(carregar_asset("iron.png"))
 
-iron = pygame.image.load("assets/iron.png")
+
 iron = pygame.transform.scale(iron, (80,80))
-fundoStart = pygame.image.load("assets/fundoStart.png")
-fundoJogo = pygame.image.load("assets/fundoJogo.png")
-fundoDead = pygame.image.load("assets/fundomorte.png")
-missel = pygame.image.load("assets/missile.png")
+fundoStart = pygame.image.load(carregar_asset("fundoStart.png"))
+
+fundoJogo = pygame.image.load(carregar_asset("fundoJogo.png"))
+
+fundoDead = pygame.image.load(carregar_asset("fundomorte.png"))
+
+missel = pygame.image.load(carregar_asset("missile.png"))
+
+
 missel = pygame.transform.scale(missel, (215, 150))
-ovelha = pygame.image.load("assets/ovelha.png")
+ovelha = pygame.image.load(carregar_asset("ovelha.png"))
+
+
 ovelha = pygame.transform.scale(ovelha, (60,60))
-fundo_boas_vindas = pygame.image.load("assets/bemvindo.png")
-missileSound = pygame.mixer.Sound("assets/carro.wav")
-explosaoSound = pygame.mixer.Sound("assets/explo.wav")
+fundo_boas_vindas = pygame.image.load(carregar_asset("bemvindo.png"))
+
+missileSound = pygame.mixer.Sound(carregar_asset("carro.wav"))
+
+explosaoSound = pygame.mixer.Sound(carregar_asset("explo.wav"))
+
+
+
 fonteMenu = pygame.font.SysFont("celeste",28)
+
 fonteMorte = pygame.font.SysFont("celeste",120)
-pygame.mixer.music.load("assets/somfundo.mp3")
+
+pygame.mixer.music.load(carregar_asset("somfundo.mp3"))
 
 velocidadeOvelha = random.choice([2, -2])
 def jogar():
@@ -288,6 +305,7 @@ def dead():
     alturaButtonQuit = 40
 
     # Carrega os dados do arquivo
+    
     if os.path.exists("log.dat"):
         with open("log.dat", "r") as arquivo:
             log_partidas = json.load(arquivo)
